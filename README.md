@@ -17,14 +17,28 @@ console.log(JSON.stringify(info, null, 2));
 Might print something like:
 
 ```js
+{
+  "supported": true,
+  "multisample": false,
+  "resolvable": false,
+  "blendable": true,
+  "filterable": true,
+  "colorRenderable": true,
+  "renderAttachment": true,
+  "copyExternalImageToTexture": true,
+  "storageReadOnly": true,
+  "storageWriteOnly": true,
+  "storageReadWrite": true
+}
 ```
 
 ## Docs
 
 See [here](https://greggman.github.io/webgpu-feature-detector/docs)
 
-* [ChangeList](https://greggman.github.io/webgpu-feature-detector/CHANGELIST.html)
-* [Migration Notes](https://greggman.github.io/webgpu-feature-detector/migration.html)
+## Example
+
+Tex
 
 ## License
 

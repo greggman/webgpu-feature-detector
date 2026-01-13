@@ -2,7 +2,7 @@
 
 # -- clip-for-deploy-start --
 
-/docs
+#/docs
 #/dist
 /screenshots
 
