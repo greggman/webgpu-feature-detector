@@ -52,23 +52,14 @@ th > div {
   text-align: end;
 }
 
-tr:nth-child(odd) td:nth-child(1) { background-color: var(--odd);}
 .not-supported,
 tr.not-supported:nth-child(odd) td:nth-child(1) {
   background-color: hsl(0, 100%, var(--lightness));
 }
 
-col:nth-child(2) { background-color:  hsl(calc( 2 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(3) { background-color:  hsl(calc( 3 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(4) { background-color:  hsl(calc( 4 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(5) { background-color:  hsl(calc( 5 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(6) { background-color:  hsl(calc( 6 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(7) { background-color:  hsl(calc( 7 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(8) { background-color:  hsl(calc( 8 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(9) { background-color:  hsl(calc( 9 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(10) { background-color: hsl(calc(10 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(11) { background-color: hsl(calc(11 * var(--cspread)), 100%, var(--lightness)); }
-col:nth-child(12) { background-color: hsl(calc(12 * var(--cspread)), 100%, var(--lightness)); }
+col { background-color:  hsl(calc( var(--index) * var(--cspread)), 100%, var(--lightness)); }
+tr:nth-child(even) td:nth-child(1) { background-color: var(--background); }
+tr:nth-child(odd) td:nth-child(1) { background-color: var(--odd); }
 
 
 </style>
@@ -167,7 +158,11 @@ function makeTable(parent, columnNames) {
 
   const tbody = c('tbody');
   parent.appendChild(c('table', [
-    c('colgroup', columnNames.map(_ => c('col'))),
+    c('colgroup', columnNames.map((_, i) => {
+      const col = c('col');
+      col.style.setProperty('--index', i.toString());
+      return col;
+    })),
     c('thead', [makeRow(columnNames, 'th')]),
     tbody,
   ]));
