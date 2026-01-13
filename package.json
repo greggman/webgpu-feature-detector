@@ -10,7 +10,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "npm run make && npm run docs && npm run makeindex",
+    "build": "npm run make && npm run docs",
     "build-ci": "npm run build && node build/tools/prep-for-deploy.js",
     "make": "rollup -c && node build/tools/fixup.d.ts.js",
     "check": "npm run lint",
