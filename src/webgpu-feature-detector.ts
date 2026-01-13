@@ -13,11 +13,36 @@ import {
   isDepthOrStencilTextureFormat,
   ImageCopyType,
   DepthStencilFormat,
+ //ColorTextureFormat,
+ //SizedTextureFormat,
+ //UncompressedTextureFormat,
+ //kColorTextureFormats,
+ //kSizedTextureFormats,
+ //kDepthStencilFormats,
+ //kUncompressedTextureFormats,
+ //kAllTextureFormats,
+  getBlockInfoForTextureFormat as getBlockInfoForTextureFormatImpl,
 } from './format_info.js';
 import { isCompatibilityMode } from './utils.js';
 
-type TextureSupportedFeatures = {
-  supported: boolean,
+export {
+  ImageCopyType,
+  //ColorTextureFormat,
+  //SizedTextureFormat,
+  //DepthStencilFormat,
+  //UncompressedTextureFormat,
+  //kColorTextureFormats,
+  //kSizedTextureFormats,
+  //kDepthStencilFormats,
+  //kUncompressedTextureFormats,
+  //kAllTextureFormats,
+};
+
+/**
+ * Features supported by a texture format.
+ */
+export type TextureSupportedFeatures = {
+  supported: boolean,  // if this is false all others will be false
   multisample: boolean,
   resolvable: boolean,  // not all multisampled textures can be resolved. Example: sint/uint textures
   blendable: boolean,
@@ -29,6 +54,18 @@ type TextureSupportedFeatures = {
   storageWriteOnly: boolean,
   storageReadWrite: boolean,
 };
+
+/**
+ * Returns the size of a block for a given texture format
+ * For a depth-stencil format it return the size of the depth aspect
+ * unless you specify the stencil-only aspect.
+ */
+export function getBlockInfoForTextureFormat(format: GPUTextureFormat, aspect: GPUTextureAspect = 'all') {
+  if (aspect === 'stencil-only') {
+    format = 'stencil8';
+  }
+  return getBlockInfoForTextureFormatImpl(format);
+}
 
 /**
  * For a given texture format, check if you can call `writeTexture`,
@@ -98,4 +135,5 @@ export function getTextureSupportedFeatures(features: GPUSupportedFeatures, form
     storageWriteOnly: supported && isTextureFormatUsableWithStorageAccessMode(features, format, 'write'),
     storageReadWrite: supported && isTextureFormatUsableWithStorageAccessMode(features, format, 'read-write'),
   };
-} 
+}
+
