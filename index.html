@@ -40,8 +40,12 @@ th > div {
   text-align: end;
 }
 
-
 tr:nth-child(odd) td:nth-child(1) { background-color: var(--odd);}
+.not-supported,
+tr.not-supported:nth-child(odd) td:nth-child(1) {
+  background-color: hsl(0, 100%, var(--lightness));
+}
+
 col:nth-child(2) { background-color:  hsl(calc( 2 * var(--cspread)), 100%, var(--lightness)); }
 col:nth-child(3) { background-color:  hsl(calc( 3 * var(--cspread)), 100%, var(--lightness)); }
 col:nth-child(4) { background-color:  hsl(calc( 4 * var(--cspread)), 100%, var(--lightness)); }
@@ -53,6 +57,8 @@ col:nth-child(9) { background-color:  hsl(calc( 9 * var(--cspread)), 100%, var(-
 col:nth-child(10) { background-color: hsl(calc(10 * var(--cspread)), 100%, var(--lightness)); }
 col:nth-child(11) { background-color: hsl(calc(11 * var(--cspread)), 100%, var(--lightness)); }
 col:nth-child(12) { background-color: hsl(calc(12 * var(--cspread)), 100%, var(--lightness)); }
+
+
 </style>
 <body>
 <h1>WebGPU Feature Detector</h1>
@@ -123,15 +129,22 @@ import {
   getTextureSupportedFeatures,
 } from './dist/0.x/webgpu-feature-detector.module.js';
 
-function c(tag, children = [], text = '') {
+function c(tag, children = [], text) {
   const e = document.createElement(tag);
-  e.textContent = text;
-  children.forEach(c => e.appendChild(c));
+  if (text) {
+    e.textContent = text;
+  }
+  children.forEach(c => e.append(c));
   return e;
 }
   
 function makeTable(parent, columnNames) {
-  const makeRow = (arr, tag = 'td') => c('tr', arr.map(v => c(tag, [c('div', [], v)])));
+  const makeRow = (arr, tag = 'td') => c('tr', arr.map(v => {
+    return (v instanceof HTMLElement)
+      ? c(tag, [v])
+      : c(tag, [c('div', [], v)]);
+  }));
+
 
   const tbody = c('tbody');
   parent.appendChild(c('table', [
@@ -140,7 +153,9 @@ function makeTable(parent, columnNames) {
     tbody,
   ]));
   return function(columnData) {
-    tbody.appendChild(makeRow(columnData));
+    const row = makeRow(columnData);
+    tbody.append(row);
+    return row;
   };
 }
 
@@ -255,8 +270,9 @@ const keys = [...Object.keys(example)]
 const addRow = makeTable(document.body, ['format', ...keys]);
 for (const format of formats) {
   const info = getTextureSupportedFeatures(adapter.features, format);
-  const checks = keys.map(k => info[k] ? '✔' : '');
-  addRow([format, ...checks]);
+  const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : '❌');
+  addRow([c('div', [], format), ...checks])
+    .classList.toggle('not-supported', !info.supported);;
 }
 </script>
 </html>

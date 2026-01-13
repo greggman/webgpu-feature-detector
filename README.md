@@ -32,13 +32,28 @@ Might print something like:
 }
 ```
 
+**NOTE: DO NOT USE THIS LIBRARY (recommended)**
+
+This is/was an experiment in supporting something like
+D3D12's `device->CheckFeatureSupport`
+
+The question is, is it really useful? The problem
+with this API is it ends up suggesting you should check
+for things you really should not likely be checking.
+
+Example: whether or not `copyExternalImageToTexture` is
+supported. Only a single format, `'rg11b10ufloat` has
+optional support. It's relatively rare format. So you're
+using that format then you might want to check but otherwise, checking for common format would just be a waste
+of time.
+
+Similarly, `filterable` and `blendable`. The only format that's generally
+affected by this is `rgba32float`. So you should not be
+checking other formats.
+
 ## Docs
 
 See [here](https://greggman.github.io/webgpu-feature-detector/docs)
-
-## Example
-
-Tex
 
 ## License
 
