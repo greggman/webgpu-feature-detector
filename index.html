@@ -144,6 +144,7 @@ col:nth-child(12) { background-color: hsl(calc(12 * var(--cspread)), 100%, var(-
 </body>
 <script type="module">
 import { 
+  getBlockInfoForTextureFormat,
   getTextureSupportedFeatures,
 } from './dist/0.x/webgpu-feature-detector.module.js';
 
@@ -237,13 +238,23 @@ const categories = [
     ],
   },
   {
-    name: 'depth/stencil',
+    name: 'depth',
+    aspect: 'depth-only',
     formats: [
       "stencil8",
       "depth16unorm",
       "depth24plus",
       "depth24plus-stencil8",
       "depth32float",
+      "depth32float-stencil8",
+    ],
+  },
+  {
+    name: 'stencil',
+    aspect: 'stencil-only',
+    formats: [
+      "stencil8",
+      "depth24plus-stencil8",
       "depth32float-stencil8",
     ],
   },
@@ -325,18 +336,21 @@ function update() {
     : device.features;
 
   const example = getTextureSupportedFeatures(features, 'rgba8unorm');
-  const keys = [...Object.keys(example)]
+  const keys = [...Object.keys(example)];
+  const blockKeys = ['bytesPerBlock', 'blockWidth', 'blockHeight'];
 
-  categories.forEach(({name, formats}) => {
+  categories.forEach(({name, formats, aspect}) => {
     const category = c('div', [
       c('h2', [], `${name} formats`),
     ]);
     category.classList.add('category');
-    const addRow = makeTable(category, ['format', ...keys]);
+    const addRow = makeTable(category, ['format', ...keys, ...blockKeys]);
     for (const format of formats) {
-      const info = getTextureSupportedFeatures(features, format);
+      const info = getTextureSupportedFeatures(features, format, aspect ?? 'all');
       const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : 'ˣ');
-      addRow([c('div', [], format), ...checks])
+      const block = getBlockInfoForTextureFormat(format, aspect ?? 'all');
+      const blockValues = blockKeys.map(k => block[k]);
+      addRow([c('div', [], format), ...checks, ...blockValues])
         .classList.toggle('not-supported', !info.supported);;
     }
     outer.append(category);
