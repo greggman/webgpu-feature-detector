@@ -21,6 +21,12 @@ html {
 *, *:before, *:after {
   box-sizing: inherit;
 } 
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+}
 tr>td {
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
@@ -159,120 +165,154 @@ function makeTable(parent, columnNames) {
   };
 }
 
-const formats = [
-  "r8unorm",
-  "r8snorm",
-  "r8uint",
-  "r8sint",
-  "r16unorm",
-  "r16snorm",
-  "r16uint",
-  "r16sint",
-  "r16float",
-  "rg8unorm",
-  "rg8snorm",
-  "rg8uint",
-  "rg8sint",
-  "r32uint",
-  "r32sint",
-  "r32float",
-  "rg16unorm",
-  "rg16snorm",
-  "rg16uint",
-  "rg16sint",
-  "rg16float",
-  "rgba8unorm",
-  "rgba8unorm-srgb",
-  "rgba8snorm",
-  "rgba8uint",
-  "rgba8sint",
-  "bgra8unorm",
-  "bgra8unorm-srgb",
-  "rgb9e5ufloat",
-  "rgb10a2uint",
-  "rgb10a2unorm",
-  "rg11b10ufloat",
-  "rg32uint",
-  "rg32sint",
-  "rg32float",
-  "rgba16unorm",
-  "rgba16snorm",
-  "rgba16uint",
-  "rgba16sint",
-  "rgba16float",
-  "rgba32uint",
-  "rgba32sint",
-  "rgba32float",
-  "stencil8",
-  "depth16unorm",
-  "depth24plus",
-  "depth24plus-stencil8",
-  "depth32float",
-  "depth32float-stencil8",
-  "bc1-rgba-unorm",
-  "bc1-rgba-unorm-srgb",
-  "bc2-rgba-unorm",
-  "bc2-rgba-unorm-srgb",
-  "bc3-rgba-unorm",
-  "bc3-rgba-unorm-srgb",
-  "bc4-r-unorm",
-  "bc4-r-snorm",
-  "bc5-rg-unorm",
-  "bc5-rg-snorm",
-  "bc6h-rgb-ufloat",
-  "bc6h-rgb-float",
-  "bc7-rgba-unorm",
-  "bc7-rgba-unorm-srgb",
-  "etc2-rgb8unorm",
-  "etc2-rgb8unorm-srgb",
-  "etc2-rgb8a1unorm",
-  "etc2-rgb8a1unorm-srgb",
-  "etc2-rgba8unorm",
-  "etc2-rgba8unorm-srgb",
-  "eac-r11unorm",
-  "eac-r11snorm",
-  "eac-rg11unorm",
-  "eac-rg11snorm",
-  "astc-4x4-unorm",
-  "astc-4x4-unorm-srgb",
-  "astc-5x4-unorm",
-  "astc-5x4-unorm-srgb",
-  "astc-5x5-unorm",
-  "astc-5x5-unorm-srgb",
-  "astc-6x5-unorm",
-  "astc-6x5-unorm-srgb",
-  "astc-6x6-unorm",
-  "astc-6x6-unorm-srgb",
-  "astc-8x5-unorm",
-  "astc-8x5-unorm-srgb",
-  "astc-8x6-unorm",
-  "astc-8x6-unorm-srgb",
-  "astc-8x8-unorm",
-  "astc-8x8-unorm-srgb",
-  "astc-10x5-unorm",
-  "astc-10x5-unorm-srgb",
-  "astc-10x6-unorm",
-  "astc-10x6-unorm-srgb",
-  "astc-10x8-unorm",
-  "astc-10x8-unorm-srgb",
-  "astc-10x10-unorm",
-  "astc-10x10-unorm-srgb",
-  "astc-12x10-unorm",
-  "astc-12x10-unorm-srgb",
-  "astc-12x12-unorm",
-  "astc-12x12-unorm-srgb",
+const categories = [
+  {
+    name: 'float/unorm',
+    formats: [
+      "r8unorm",
+      "r16unorm",
+      "r16float",
+      "rg8unorm",
+      "r32float",
+      "rg16unorm",
+      "rg16float",
+      "rgba8unorm",
+      "rgba8unorm-srgb",
+      "bgra8unorm",
+      "bgra8unorm-srgb",
+      "rgb9e5ufloat",
+      "rgb10a2unorm",
+      "rg11b10ufloat",
+      "rg32float",
+      "rgba16unorm",
+      "rgba16float",
+      "rgba32float",
+    ],
+  },
+  {
+    name: 'snorm',
+    formats: [
+      "r8snorm",
+      "r16snorm",
+      "rg8snorm",
+      "rg16snorm",
+      "rgba8snorm",
+      "rgba16snorm",
+    ],
+  },
+  {
+    name: 'sint/uint',
+    formats: [
+      "r8uint",
+      "r8sint",
+      "r16uint",
+      "r16sint",
+      "rg8uint",
+      "rg8sint",
+      "r32uint",
+      "r32sint",
+      "rg16uint",
+      "rg16sint",
+      "rgba8uint",
+      "rgba8sint",
+      "rgb10a2uint",
+      "rg32uint",
+      "rg32sint",
+      "rgba16uint",
+      "rgba16sint",
+      "rgba32uint",
+      "rgba32sint",
+    ],
+  },
+  {
+    name: 'depth/stencil',
+    formats: [
+      "stencil8",
+      "depth16unorm",
+      "depth24plus",
+      "depth24plus-stencil8",
+      "depth32float",
+      "depth32float-stencil8",
+    ],
+  },
+  {
+    name: 'compressed',
+    formats: [
+      "bc1-rgba-unorm",
+      "bc1-rgba-unorm-srgb",
+      "bc2-rgba-unorm",
+      "bc2-rgba-unorm-srgb",
+      "bc3-rgba-unorm",
+      "bc3-rgba-unorm-srgb",
+      "bc4-r-unorm",
+      "bc4-r-snorm",
+      "bc5-rg-unorm",
+      "bc5-rg-snorm",
+      "bc6h-rgb-ufloat",
+      "bc6h-rgb-float",
+      "bc7-rgba-unorm",
+      "bc7-rgba-unorm-srgb",
+      "etc2-rgb8unorm",
+      "etc2-rgb8unorm-srgb",
+      "etc2-rgb8a1unorm",
+      "etc2-rgb8a1unorm-srgb",
+      "etc2-rgba8unorm",
+      "etc2-rgba8unorm-srgb",
+      "eac-r11unorm",
+      "eac-r11snorm",
+      "eac-rg11unorm",
+      "eac-rg11snorm",
+      "astc-4x4-unorm",
+      "astc-4x4-unorm-srgb",
+      "astc-5x4-unorm",
+      "astc-5x4-unorm-srgb",
+      "astc-5x5-unorm",
+      "astc-5x5-unorm-srgb",
+      "astc-6x5-unorm",
+      "astc-6x5-unorm-srgb",
+      "astc-6x6-unorm",
+      "astc-6x6-unorm-srgb",
+      "astc-8x5-unorm",
+      "astc-8x5-unorm-srgb",
+      "astc-8x6-unorm",
+      "astc-8x6-unorm-srgb",
+      "astc-8x8-unorm",
+      "astc-8x8-unorm-srgb",
+      "astc-10x5-unorm",
+      "astc-10x5-unorm-srgb",
+      "astc-10x6-unorm",
+      "astc-10x6-unorm-srgb",
+      "astc-10x8-unorm",
+      "astc-10x8-unorm-srgb",
+      "astc-10x10-unorm",
+      "astc-10x10-unorm-srgb",
+      "astc-12x10-unorm",
+      "astc-12x10-unorm-srgb",
+      "astc-12x12-unorm",
+      "astc-12x12-unorm-srgb",
+    ],
+  },
 ];
 
 const adapter = await navigator.gpu.requestAdapter();
 const example = getTextureSupportedFeatures(adapter.features, 'rgba8unorm');
 const keys = [...Object.keys(example)]
 
-const addRow = makeTable(document.body, ['format', ...keys]);
-for (const format of formats) {
-  const info = getTextureSupportedFeatures(adapter.features, format);
-  const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : '❌');
-  addRow([c('div', [], format), ...checks])
-    .classList.toggle('not-supported', !info.supported);;
-}
+const outer = c('div', categories.map(({name, formats}) => {
+  const category = c('div', [
+    c('h2', [], `${name} formats`),
+  ]);
+  category.classList.add('category');
+  const addRow = makeTable(category, ['format', ...keys]);
+  for (const format of formats) {
+    const info = getTextureSupportedFeatures(adapter.features, format);
+    const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : '❌');
+    addRow([c('div', [], format), ...checks])
+      .classList.toggle('not-supported', !info.supported);;
+  }
+  return category;
+}));
+outer.classList.add('categories');
+document.body.append(outer);
 </script>
 </html>
