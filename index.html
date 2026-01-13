@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<style>
+:root {
+  color-scheme: light dark;
+  --cspread: 137;
+  --lightness: 90%;
+  --background: #FFF;
+  --odd: #DDD;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lightness: 20%;
+    --background: #000;
+    --odd: #333;
+  }
+}
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+} 
+tr>td {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+tr:hover>td {
+  border-top: 1px solid red;
+  border-bottom: 1px solid red;
+}
+thead {
+  position: sticky;
+  top: 0;
+  background-color:var(--background);
+}
+th > div {
+  /* Aligns text vertically from bottom to top (sideways-lr might be an alternative) */
+  writing-mode: vertical-rl;
+  text-align: end;
+}
+
+
+tr:nth-child(odd) td:nth-child(1) { background-color: var(--odd);}
+col:nth-child(2) { background-color:  hsl(calc( 2 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(3) { background-color:  hsl(calc( 3 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(4) { background-color:  hsl(calc( 4 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(5) { background-color:  hsl(calc( 5 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(6) { background-color:  hsl(calc( 6 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(7) { background-color:  hsl(calc( 7 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(8) { background-color:  hsl(calc( 8 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(9) { background-color:  hsl(calc( 9 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(10) { background-color: hsl(calc(10 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(11) { background-color: hsl(calc(11 * var(--cspread)), 100%, var(--lightness)); }
+col:nth-child(12) { background-color: hsl(calc(12 * var(--cspread)), 100%, var(--lightness)); }
+</style>
+<body>
+<h1>WebGPU Feature Detector</h1>
+<style>
+#forkongithub a {
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    font-family: arial,sans-serif;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 40px;
+    font-size: 12px;
+    line-height: 24px;
+    position: relative;
+    transition: 0.5s;
+    display: block;
+}
+#forkongithub a:hover {
+    background: #c11;
+    color: #fff;
+}
+#forkongithub a::before,#forkongithub a::after {
+    content: "";
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 1px;
+    background: #fff;
+}
+#forkongithub a::after {
+    bottom: 1px;
+    top: auto;
+}
+
+@media screen and (min-width: 400px){
+    #forkongithub{
+        position: fixed;
+        display: block;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+        z-index: 9999;
+    }
+    #forkongithub a{
+        width: 200px;
+        position: absolute;
+        top: 40px;
+        right: -40px;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.8);
+    }
+}
+
+</style>
+<div id="forkongithub"><a href="https://github.com/greggman/webgpu-feature-detector">Fork me on GitHub</a></div>
+</body>
+<script type="module">
+import { 
+  getTextureSupportedFeatures,
+} from './dist/0.x/webgpu-feature-detector.module.js';
+
+function c(tag, children = [], text = '') {
+  const e = document.createElement(tag);
+  e.textContent = text;
+  children.forEach(c => e.appendChild(c));
+  return e;
+}
+  
+function makeTable(parent, columnNames) {
+  const makeRow = (arr, tag = 'td') => c('tr', arr.map(v => c(tag, [c('div', [], v)])));
+
+  const tbody = c('tbody');
+  parent.appendChild(c('table', [
+    c('colgroup', columnNames.map(_ => c('col'))),
+    c('thead', [makeRow(columnNames, 'th')]),
+    tbody,
+  ]));
+  return function(columnData) {
+    tbody.appendChild(makeRow(columnData));
+  };
+}
+
+const formats = [
+  "r8unorm",
+  "r8snorm",
+  "r8uint",
+  "r8sint",
+  "r16unorm",
+  "r16snorm",
+  "r16uint",
+  "r16sint",
+  "r16float",
+  "rg8unorm",
+  "rg8snorm",
+  "rg8uint",
+  "rg8sint",
+  "r32uint",
+  "r32sint",
+  "r32float",
+  "rg16unorm",
+  "rg16snorm",
+  "rg16uint",
+  "rg16sint",
+  "rg16float",
+  "rgba8unorm",
+  "rgba8unorm-srgb",
+  "rgba8snorm",
+  "rgba8uint",
+  "rgba8sint",
+  "bgra8unorm",
+  "bgra8unorm-srgb",
+  "rgb9e5ufloat",
+  "rgb10a2uint",
+  "rgb10a2unorm",
+  "rg11b10ufloat",
+  "rg32uint",
+  "rg32sint",
+  "rg32float",
+  "rgba16unorm",
+  "rgba16snorm",
+  "rgba16uint",
+  "rgba16sint",
+  "rgba16float",
+  "rgba32uint",
+  "rgba32sint",
+  "rgba32float",
+  "stencil8",
+  "depth16unorm",
+  "depth24plus",
+  "depth24plus-stencil8",
+  "depth32float",
+  "depth32float-stencil8",
+  "bc1-rgba-unorm",
+  "bc1-rgba-unorm-srgb",
+  "bc2-rgba-unorm",
+  "bc2-rgba-unorm-srgb",
+  "bc3-rgba-unorm",
+  "bc3-rgba-unorm-srgb",
+  "bc4-r-unorm",
+  "bc4-r-snorm",
+  "bc5-rg-unorm",
+  "bc5-rg-snorm",
+  "bc6h-rgb-ufloat",
+  "bc6h-rgb-float",
+  "bc7-rgba-unorm",
+  "bc7-rgba-unorm-srgb",
+  "etc2-rgb8unorm",
+  "etc2-rgb8unorm-srgb",
+  "etc2-rgb8a1unorm",
+  "etc2-rgb8a1unorm-srgb",
+  "etc2-rgba8unorm",
+  "etc2-rgba8unorm-srgb",
+  "eac-r11unorm",
+  "eac-r11snorm",
+  "eac-rg11unorm",
+  "eac-rg11snorm",
+  "astc-4x4-unorm",
+  "astc-4x4-unorm-srgb",
+  "astc-5x4-unorm",
+  "astc-5x4-unorm-srgb",
+  "astc-5x5-unorm",
+  "astc-5x5-unorm-srgb",
+  "astc-6x5-unorm",
+  "astc-6x5-unorm-srgb",
+  "astc-6x6-unorm",
+  "astc-6x6-unorm-srgb",
+  "astc-8x5-unorm",
+  "astc-8x5-unorm-srgb",
+  "astc-8x6-unorm",
+  "astc-8x6-unorm-srgb",
+  "astc-8x8-unorm",
+  "astc-8x8-unorm-srgb",
+  "astc-10x5-unorm",
+  "astc-10x5-unorm-srgb",
+  "astc-10x6-unorm",
+  "astc-10x6-unorm-srgb",
+  "astc-10x8-unorm",
+  "astc-10x8-unorm-srgb",
+  "astc-10x10-unorm",
+  "astc-10x10-unorm-srgb",
+  "astc-12x10-unorm",
+  "astc-12x10-unorm-srgb",
+  "astc-12x12-unorm",
+  "astc-12x12-unorm-srgb",
+];
+
+const adapter = await navigator.gpu.requestAdapter();
+const example = getTextureSupportedFeatures(adapter.features, 'rgba8unorm');
+const keys = [...Object.keys(example)]
+
+const addRow = makeTable(document.body, ['format', ...keys]);
+for (const format of formats) {
+  const info = getTextureSupportedFeatures(adapter.features, format);
+  const checks = keys.map(k => info[k] ? '✔' : '');
+  addRow([format, ...checks]);
+}
+</script>
+</html>

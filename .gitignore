@@ -3,9 +3,8 @@
 # -- clip-for-deploy-start --
 
 /docs
-/dist
+#/dist
 /screenshots
-index.html
 
 # -- clip-for-deploy-end --
 
