@@ -1721,6 +1721,20 @@ function depthStencilBufferTextureCopySupported(type, format, aspect) {
     return supportedAspects.includes(aspect);
 }
 /**
+ * Gets the block width, height, and bytes per block for a color texture format.
+ * Note that bytesPerBlock will be undefined if format's size is undefined.
+ * If you are only using color or encodable formats, @see {@link getBlockInfoForColorTextureFormat}
+ * or {@link getBlockInfoForEncodableTextureFormat}
+ */
+function getBlockInfoForTextureFormat$1(format) {
+    const info = kTextureFormatInfo[format];
+    return {
+        blockWidth: info.blockWidth,
+        blockHeight: info.blockHeight,
+        bytesPerBlock: info.color?.bytes ?? info.depth?.bytes ?? info.stencil?.bytes,
+    };
+}
+/**
  * Gets the feature needed for a give texture format or undefined if none.
  */
 function getRequiredFeatureForTextureFormat(format) {
@@ -1974,6 +1988,20 @@ function isTextureFormatResolvable(features, format) {
 getFeaturesForFormats(kAllTextureFormats);
 
 /**
+ * Returns the size of a block for a given texture format
+ * For a depth-stencil format it return the size of the depth aspect
+ * unless you specify the stencil-only aspect.
+ */
+function getBlockInfoForTextureFormat(format, aspect = 'all') {
+    if (aspect === 'stencil-only') {
+        format = 'stencil8';
+    }
+    else if (format === 'depth24plus' || format === 'depth24plus-stencil8') {
+        return { blockWidth: 1, blockHeight: 1 };
+    }
+    return getBlockInfoForTextureFormat$1(format);
+}
+/**
  * For a given texture format, check if you can call `writeTexture`,
  * `copyBufferToTexture`, `copyTextureToBuffer`, and `copyTextureToTexture`
  */
@@ -2034,5 +2062,5 @@ function getTextureSupportedFeatures(features, format) {
     };
 }
 
-export { copySupported, getTextureSupportedFeatures };
+export { copySupported, getBlockInfoForTextureFormat, getTextureSupportedFeatures };
 //# sourceMappingURL=webgpu-feature-detector.module.js.map
