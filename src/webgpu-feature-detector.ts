@@ -63,6 +63,8 @@ export type TextureSupportedFeatures = {
 export function getBlockInfoForTextureFormat(format: GPUTextureFormat, aspect: GPUTextureAspect = 'all') {
   if (aspect === 'stencil-only') {
     format = 'stencil8';
+  } else if (format === 'depth24plus' || format === 'depth24plus-stencil8') {
+    return { blockWidth: 1, blockHeight: 1 };
   }
   return getBlockInfoForTextureFormatImpl(format);
 }
