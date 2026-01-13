@@ -22,7 +22,7 @@ html {
   box-sizing: inherit;
 } 
 
-.categories {
+#categories {
   display: flex;
   flex-wrap: wrap;
   gap: 2em;
@@ -34,6 +34,12 @@ tr>td {
 tr:hover>td {
   border-top: 1px solid red;
   border-bottom: 1px solid red;
+}
+td>div {
+  text-align: center;
+}
+tr>td:nth-child(1)>div {
+  text-align: left;
 }
 thead {
   position: sticky;
@@ -68,6 +74,12 @@ col:nth-child(12) { background-color: hsl(calc(12 * var(--cspread)), 100%, var(-
 </style>
 <body>
 <h1>WebGPU Feature Detector</h1>
+<div>
+<label><input type="radio" name="mode" value="max" checked>this machine</label>
+<label><input type="radio" name="mode" value="default">default</label>
+<!--<label><input type="radio" name="mode" value="compat">compat</label>-->
+</div>
+<div id="categories"><</div>
 <style>
 #forkongithub a {
     background: #000;
@@ -294,25 +306,45 @@ const categories = [
   },
 ];
 
-const adapter = await navigator.gpu.requestAdapter();
-const example = getTextureSupportedFeatures(adapter.features, 'rgba8unorm');
-const keys = [...Object.keys(example)]
+const outer = document.querySelector('#categories');
 
-const outer = c('div', categories.map(({name, formats}) => {
-  const category = c('div', [
-    c('h2', [], `${name} formats`),
-  ]);
-  category.classList.add('category');
-  const addRow = makeTable(category, ['format', ...keys]);
-  for (const format of formats) {
-    const info = getTextureSupportedFeatures(adapter.features, format);
-    const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : '❌');
-    addRow([c('div', [], format), ...checks])
-      .classList.toggle('not-supported', !info.supported);;
-  }
-  return category;
-}));
-outer.classList.add('categories');
-document.body.append(outer);
+const adapter = await navigator.gpu.requestAdapter({featureLevel: 'compatibility'});
+const device = await adapter.requestDevice({
+  requiredFeatures: [
+    ...(adapter.features.has('core-features-and-limits') ? ['core-features-and-limits'] : [])
+  ],
+});
+
+function update() {
+  outer.innerHTML = '';
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+
+  console.log(mode);
+  const features = mode === 'max'
+    ? adapter.features
+    : device.features;
+
+  const example = getTextureSupportedFeatures(features, 'rgba8unorm');
+  const keys = [...Object.keys(example)]
+
+  categories.forEach(({name, formats}) => {
+    const category = c('div', [
+      c('h2', [], `${name} formats`),
+    ]);
+    category.classList.add('category');
+    const addRow = makeTable(category, ['format', ...keys]);
+    for (const format of formats) {
+      const info = getTextureSupportedFeatures(features, format);
+      const checks = keys.map(k => info[k] ? '✔' : info.supported ? '' : 'ˣ');
+      addRow([c('div', [], format), ...checks])
+        .classList.toggle('not-supported', !info.supported);;
+    }
+    outer.append(category);
+  });
+}
+
+update();
+document.querySelectorAll('input[name="mode"]').forEach(e =>e.addEventListener('change', update));
+
 </script>
 </html>
